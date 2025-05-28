@@ -14,6 +14,16 @@ pub struct InitSaleAccount<'info> {
         bump
     )]
     pub sale: Account<'info, SaleAccount>,
+
+/// CHECK:` doc comment explaining why no checks through types are necessary.
+    #[account(
+        mut,
+        seeds = [crate::TOKEN_SEED], 
+        bump,
+    )]
+    pub pda_account: AccountInfo<'info>, //合约pda账户
+    
+    
     pub token_mint: Account<'info, Mint>,
     pub buy_token_mint: Account<'info, Mint>,
     
@@ -31,7 +41,7 @@ pub struct InitSaleAccount<'info> {
         init,
         payer = owner,
         associated_token::mint = token_mint,
-        associated_token::authority = sale
+        associated_token::authority = pda_account
     )]
     pub sale_token_account: Account<'info, TokenAccount>,
     
@@ -49,14 +59,14 @@ impl<'info> InitSaleAccount<'info> {
         }
 
         // 验证销售数量不能超过代币总量的80%
-        if sale_amount > self.token_mint.supply * 4 / 5 {
+        if sale_amount > self.token_mint.supply {
             msg!("Sale amount is too high.");
             return Err(ErrorCode::SaleAmountTooHigh.into());
         }
 
         // 检查代币余额是否足够
         let owner_balance = self.owner_token_account.amount;
-        if owner_balance < sale_amount {
+        if owner_balance < self.token_mint.supply {
             msg!("Insufficient token balance.");
             return Err(ErrorCode::InsufficientBalance.into());
         }
@@ -74,10 +84,13 @@ impl<'info> InitSaleAccount<'info> {
             return Err(ErrorCode::InvalidEndTime.into());
         }
 
+        msg!("self.token_mint.supply {}",self.token_mint.supply);
         // 划转token
         transfer(
             self.into_transfer_to_vault_context(),
-            sale_amount
+            
+            //代币总量转入
+            self.token_mint.supply
         )?;
 
         let sale = &mut self.sale;

@@ -58,6 +58,15 @@ pub enum ErrorCode {
 
     #[msg("Token account mismatch.")]
     TokenAccountMismatch,
+
+    #[msg("User already purchased.")]
+    UserAlreadyPurchased,
+
+    #[msg("User not purchased.")]
+    UserNotPurchased,
+
+    #[msg("MissingRequiredSignature.")]
+    MissingRequiredSignature,
     
 }
 

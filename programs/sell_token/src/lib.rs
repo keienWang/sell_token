@@ -5,15 +5,16 @@ use constants::*;
 
 
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount, Transfer};
+
 
 use structures::{
     init_sale_account::*,
     withdraw_tokens::*,
     buy_token::*,
+    withdraw_sale_tokens::*,
 };
 
-declare_id!("QWXKkZHHuVKooqKnRjdLoEPt8PGrjaFNB6bRURnDx4T");
+declare_id!("8u2V6SHBURgDV23rvWFKBvPvhthYKP3eHfYgGJzQHLps");
 
 #[program]
 pub mod sell_token {
@@ -26,12 +27,19 @@ pub mod sell_token {
         ctx.accounts.process(sale_amount, price_per_token, end_time)
     }
 
-    pub fn buy_token(ctx: Context<BuyToken>, amount: u64) -> Result<()> {
-        ctx.accounts.process(amount)
+    pub fn buy_token(ctx: Context<BuyToken>, amount: u64,open_time: u64) -> Result<()> {
+        let bump = ctx.bumps.pda_account;
+        ctx.accounts.process(amount, bump,open_time)
     }
 
     pub fn withdraw_tokens(ctx: Context<WithdrawTokens>) -> Result<()> {
-        ctx.accounts.process()
+        let bump = ctx.bumps.pda_account;
+        ctx.accounts.process(bump)
+    }
+
+    pub fn withdraw_sale_tokens(ctx: Context<WithdrawSaleTokens>) -> Result<()> {
+        let bump = ctx.bumps.pda_account;
+        ctx.accounts.process(bump)
     }
 }
 

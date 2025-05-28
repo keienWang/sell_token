@@ -12,7 +12,7 @@ sell_token2 = "8Adu9nQQHeMfS3NXrwAqHRw336U8VgxjbUCWRNfqQFDy"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "https://api.devnet.solana.com"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
